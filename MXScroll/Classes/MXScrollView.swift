@@ -165,8 +165,8 @@ class MXScrollView<T: MXSegmentProtocol>: UIScrollView where T: UIView {
 
   // add segment
   func addSegmentView(_ segment: T, frame: CGRect) {
-    // only if  the contentView's count > 1 segment will show
-    if contentViews.count > 1 {
+    // only if  the contentView's count > 0 segment will show
+    if contentViews.count > 0 {
       segmentView = segment
       segment.frame = CGRect(x: 0, y: 0, width: frame.width, height: segmentViewHeight)
       addSubview(segment)
