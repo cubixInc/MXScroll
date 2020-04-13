@@ -187,6 +187,9 @@ public class MSSegmentControl: UIControl {
     /// Height of the selection indicator stripe.
     public var selectionIndicatorHeight: CGFloat = 5.0
     
+    /// Width of the selection indicator stripe.
+    public var selectionIndicatorWidth: CGFloat = 0;
+    
     public var edgeInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
     public var selectionEdgeInset = UIEdgeInsets.zero
     public var verticalDividerWidth = 1.0
@@ -701,11 +704,11 @@ public class MSSegmentControl: UIControl {
         }
         var sectionWidth: CGFloat = 0.0
         if self.type == .text {
-            sectionWidth = self.measureTitleAtIndex(index: self.selectedSegmentIndex).width
+            sectionWidth = (self.selectionIndicatorWidth > 0) ? self.selectionIndicatorWidth : self.measureTitleAtIndex(index: self.selectedSegmentIndex).width
         } else if self.type == .images {
             sectionWidth = self.sectionImages[self.selectedSegmentIndex].size.width
         } else if self.type == .textImages {
-            let stringWidth = self.measureTitleAtIndex(index: self.selectedSegmentIndex).width
+            let stringWidth = (self.selectionIndicatorWidth > 0) ? self.selectionIndicatorWidth : self.measureTitleAtIndex(index: self.selectedSegmentIndex).width
             let imageWidth = self.sectionImages[self.selectedSegmentIndex].size.width
             sectionWidth = max(stringWidth, imageWidth)
         }
