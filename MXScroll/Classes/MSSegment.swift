@@ -14,6 +14,7 @@ public enum MSSegmentedControlSelectionStyle:Int {
     case fullWidth
     case box
     case arrow
+    case rounded
 }
 
 public enum MSSegmentedControlSelectionIndicatorLocation:Int {
@@ -204,6 +205,8 @@ open class MSSegmentControl: UIControl {
         }
     }
     internal var selectionIndicatorArrowLayer = CALayer()
+    internal var selectionIndicatorRoundedLayer = CALayer()
+    
     internal var segmentWidth: CGFloat = 0.0
     internal var segmentWidthsArray: [CGFloat] = []
     internal var scrollView: MSScrollView! = {
@@ -327,6 +330,7 @@ open class MSSegmentControl: UIControl {
         UIRectFill(self.bounds)
         
         self.selectionIndicatorArrowLayer.backgroundColor = self.selectionIndicatorColor.cgColor
+        self.selectionIndicatorRoundedLayer.backgroundColor = self.selectionIndicatorColor.cgColor
         self.selectionIndicatorStripLayer.backgroundColor = self.selectionIndicatorColor.cgColor
         self.selectionIndicatorBoxLayer.backgroundColor = self.selectionIndicatorBoxColor.cgColor
         self.selectionIndicatorBoxLayer.borderColor = self.selectionIndicatorBoxColor.cgColor
@@ -354,6 +358,11 @@ open class MSSegmentControl: UIControl {
                 if self.selectionIndicatorArrowLayer.superlayer == nil {
                     self.setArrowFrame()
                     self.scrollView.layer.addSublayer(self.selectionIndicatorArrowLayer)
+                }
+            } else if self.selectionStyle == .rounded {
+                if (selectionIndicatorRoundedLayer.sublayers == nil) {
+                    self.setRoundedFrame()
+                    self.scrollView.layer.addSublayer(self.selectionIndicatorRoundedLayer)
                 }
             } else {
                 if self.selectionIndicatorStripLayer.superlayer == nil {
@@ -685,6 +694,12 @@ open class MSSegmentControl: UIControl {
         self.selectionIndicatorArrowLayer.mask = maskLayer
     }
     
+    private func setRoundedFrame() {
+        self.selectionIndicatorRoundedLayer.frame = self.frameForSelectionIndicator();
+        self.selectionIndicatorRoundedLayer.cornerRadius = self.selectionIndicatorRoundedLayer.frame.height / 2.0;
+        self.selectionIndicatorRoundedLayer.masksToBounds = true
+    }
+    
     /// Stripe width in range(0.0 - 1.0).
     /// Default is 1.0
     public var indicatorWidthPercent: Double = 1.0 {
@@ -1003,6 +1018,7 @@ open class MSSegmentControl: UIControl {
             self.selectionIndicatorBoxLayer.removeFromSuperlayer()
             self.selectionIndicatorArrowLayer.removeFromSuperlayer()
             self.selectionIndicatorStripLayer.removeFromSuperlayer()
+            self.selectionIndicatorRoundedLayer.removeFromSuperlayer()
         } else {
             self.scrollToSelectedSegmentIndex(animated: animated)
             
@@ -1013,6 +1029,12 @@ open class MSSegmentControl: UIControl {
                 if self.selectionStyle == .arrow {
                     if self.selectionIndicatorArrowLayer.superlayer == nil {
                         self.scrollView.layer.addSublayer(self.selectionIndicatorArrowLayer)
+                        self.setSelected(forIndex: index, animated: false, shouldNotify: true)
+                        return
+                    }
+                } else if self.selectionStyle == .rounded {
+                    if self.selectionIndicatorRoundedLayer.superlayer == nil {
+                        self.scrollView.layer.addSublayer(self.selectionIndicatorRoundedLayer)
                         self.setSelected(forIndex: index, animated: false, shouldNotify: true)
                         return
                     }
@@ -1034,6 +1056,7 @@ open class MSSegmentControl: UIControl {
                 self.selectionIndicatorArrowLayer.actions = nil
                 self.selectionIndicatorStripLayer.actions = nil
                 self.selectionIndicatorBoxLayer.actions = nil
+                self.selectionIndicatorRoundedLayer.actions = nil
                 
                 // Animate to new position
                 CATransaction.begin()
@@ -1042,6 +1065,7 @@ open class MSSegmentControl: UIControl {
 //                CATransaction.setAnimationTimingFunction(CAMediaTimingFunction(name: .linear))
                 CATransaction.setAnimationTimingFunction(CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear))
                 self.setArrowFrame()
+                self.setRoundedFrame()
                 self.selectionIndicatorBoxLayer.frame = self.frameForFillerSelectionIndicator()
                 self.selectionIndicatorStripLayer.frame = self.frameForSelectionIndicator()
                 CATransaction.commit()
@@ -1054,6 +1078,10 @@ open class MSSegmentControl: UIControl {
                 self.selectionIndicatorStripLayer.frame = self.frameForSelectionIndicator()
                 self.selectionIndicatorBoxLayer.actions = nil
                 self.selectionIndicatorBoxLayer.frame = self.frameForFillerSelectionIndicator()
+                
+                self.selectionIndicatorRoundedLayer.actions = nil
+                self.setRoundedFrame();
+                
                 if shouldNotify {
                     self.notifyForSegmentChange(toIndex: index)
                 }
