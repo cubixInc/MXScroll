@@ -28,6 +28,8 @@ class MXScrollView<T: MXSegmentProtocol>: UIScrollView where T: UIView {
   //  SegmentView
   var segmentView: T?
   var segmentViewHeight: CGFloat = 40
+    
+  var segmentLeftPadding: CGFloat = 0;
 
   //  ThirdPart
   var contentView: MXContentView!
@@ -112,7 +114,8 @@ class MXScrollView<T: MXSegmentProtocol>: UIScrollView where T: UIView {
       let realHeightOB = web.rx.realContentHeight.share()
       realHeightOB.bind(to: web.rx.MatchHeightEqualToContent).disposed(by: dispose)
       realHeightOB
-        .subscribe { eve in
+        .subscribe { [weak self] eve in
+          guard let self = self else { return }
           if !eve.isStopEvent {
             self.updateHeaderHeight()
             if self.shouldScrollToBottomAtFirstTime {
@@ -125,7 +128,8 @@ class MXScrollView<T: MXSegmentProtocol>: UIScrollView where T: UIView {
       let realHeightOB = uweb.rx.realContentHeight.share()
       realHeightOB.bind(to: uweb.rx.MatchHeightEqualToContent).disposed(by: dispose)
       realHeightOB.observeOn(MainScheduler.asyncInstance)
-        .subscribe { eve in
+        .subscribe { [weak self] eve in
+          guard let self = self else { return }
           if !eve.isStopEvent {
             self.updateHeaderHeight()
             if self.shouldScrollToBottomAtFirstTime {
@@ -136,7 +140,7 @@ class MXScrollView<T: MXSegmentProtocol>: UIScrollView where T: UIView {
     } else if let scroll = view as? UIScrollView {
       scroll.rx.realContentHeight.bind(to: scroll.rx.MatchHeightEqualToContent).disposed(by: dispose)
       scroll.rx.realContentHeight.skipWhile { $0 == 0.0 }
-        .delay(DispatchTimeInterval.microseconds(1), scheduler: MainScheduler.asyncInstance) 
+        .delay(DispatchTimeInterval.microseconds(1), scheduler: MainScheduler.asyncInstance)
         .subscribe { [unowned self] eve in
           if !eve.isStopEvent {
             self.updateHeaderHeight()
@@ -168,19 +172,19 @@ class MXScrollView<T: MXSegmentProtocol>: UIScrollView where T: UIView {
     // only if  the contentView's count > 0 segment will show
     if contentViews.count > 0 {
       segmentView = segment
-      segment.frame = CGRect(x: 0, y: 0, width: frame.width, height: segmentViewHeight)
+      segment.frame = CGRect(x: 0, y: 0, width: frame.width - segmentLeftPadding, height: segmentViewHeight)
       addSubview(segment)
 
       let view = headerView == nil ? containerView : headerView
       segment.easy.layout(
-        Left(0),
+        Left(segmentLeftPadding),
         Right(0),
         Width().like(containerView),
         Height(segmentViewHeight),
         Top(headerViewOffsetHeight ?? 0).to(view!, .bottom)
       )
       segmentView!.change = { [unowned self] index in
-        self.contentView.setSelected(index: index, animator: false)
+        self.contentView.setSelected(index: index, animator: true)
       }
     } else {
       segmentViewHeight = 0
