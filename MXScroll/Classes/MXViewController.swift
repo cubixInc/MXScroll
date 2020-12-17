@@ -25,7 +25,7 @@ import UIKit
     @objc optional func headerViewForMixObserveContentOffsetChange() -> UIView?
 }
 
-public class MXViewController<T: MXSegmentProtocol>: UIViewController where T: UIView {
+open class MXViewController<T: MXSegmentProtocol>: UIViewController where T: UIView {
     /// settting segment from outside
     open var segmentView: T!
     
@@ -112,7 +112,7 @@ public class MXViewController<T: MXSegmentProtocol>: UIViewController where T: U
         }
     }
     
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
@@ -148,10 +148,10 @@ public class MXViewController<T: MXSegmentProtocol>: UIViewController where T: U
     /**
      * Set the default values for the segmented scroll view.
      */
-    func setDefaultValuesToSegmentedScrollView() {
+    open func setDefaultValuesToSegmentedScrollView() {
     }
     
-    public override func viewWillAppear(_ animated: Bool) {
+    open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if shouldScrollToBottomAtFirstTime {
             scrollToBottom()
@@ -162,7 +162,7 @@ public class MXViewController<T: MXSegmentProtocol>: UIViewController where T: U
         super.loadView()
     }
     
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         print("viewDidLoad")
         view.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
