@@ -21,23 +21,6 @@ func castOrThrow<T>(_ resultType: T.Type, _ object: Any) throws -> T {
     return returnValue
 }
 
-extension Reactive where Base :UIWebView{
-    // make the webview out frame same with content
-    public var MatchHeightEqualToContent:Binder<CGFloat>{
-        return Binder(self.base){(webview,value) in
-            webview.easy.layout(
-                Height(value)
-            )
-        }
-    }
-    
-    // export to public the real content height. insert js function when webview is did finish load
-    public var realContentHeight: Observable<CGFloat> {
-        return self.base.scrollView.rx.observeWeakly(CGSize.self, "contentSize")
-            .map{$0?.height ?? 0}.distinctUntilChanged()
-    }
-}
-
 extension Reactive where Base: WKWebView {
     /// Reactive wrapper for delegate method `webView(_ webView: WKWebView, didFinish navigation: WKNavigation!)`
     public var didFinishNavigation: ControlEvent<WKNavigationEvent> {

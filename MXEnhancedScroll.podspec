@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'MXEnhancedScroll'
-  s.version          = '0.1.9'
+  s.version          = '0.2.0'
   s.summary          = 'Mix Scroll easy'
 
   s.description      = <<-DESC
